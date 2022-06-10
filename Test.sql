@@ -1,0 +1,686 @@
+-- SELECT * FROM aircrafts;
+-- SELECT aircraft_code,range,model FROM aircrafts ORDER BY aircraft_code;
+-- SELECT range,aircraft_code,model FROM aircrafts;
+-- SELECT * FROM airports;
+-- SELECT airport_code,airport_name,city FROM airports;
+-- SELECT DISTINCT * FROM boarding_passes;
+-- SELECT COUNT(ticket_no) FROM boarding_passes;
+-- SELECT  COUNT(*) FROM boarding_passes;
+-- SELECT  * FROM tickets;
+-- SELECT   passenger_name FROM tickets ORDER BY passenger_name ASC;
+-- SELECT   * FROM tickets ORDER BY passenger_name ASC;
+-- SELECT airport_code,airport_name,city FROM airports WHERE airport_code LIKE '%A%';
+-- SELECT airport_code,airport_name,city FROM airports WHERE city->>'en'='Yakutsk';
+-- SELECT city FROM airports WHERE airport_code LIKE '%B%';
+-- SELECT * FROM airports WHERE timezone = 'Asia/Yakutsk';
+-- SELECT * FROM bookings WHERE total_amount>200000;
+-- SELECT COUNT(*) FROM bookings WHERE total_amount>200000;
+-- SELECT * FROM bookings WHERE total_amount<200000;
+-- SELECT COUNT(*) FROM bookings WHERE total_amount<200000;
+-- SELECT * FROM bookings WHERE total_amount<=200000;
+-- SELECT * FROM seats WHERE aircraft_code = '319' AND fare_conditions = 'Business';
+-- SELECT * FROM aircrafts WHERE model ->> 'en' LIKE '_o%';
+-- SELECT * FROM aircrafts WHERE model ->> 'en' LIKE 'Airbus%';
+-- SELECT * FROM aircrafts WHERE model ->> 'en' LIKE 'Airbus%200';
+-- SELECT * FROM aircrafts WHERE model ->> 'en' NOT LIKE 'Airbus%200';
+-- SELECT * FROM aircrafts WHERE model ->> 'en' NOT LIKE 'Airbus%200' AND  model ->> 'en' NOT LIKE '%300';
+-- -SELECT * FROM tickets ORDER BY passenger_name DESC;
+-- -SELECT * FROM tickets WHERE passenger_name LIKE 'ADELINA%' ORDER BY passenger_name ASC;
+-- -SELECT * FROM tickets WHERE passenger_name LIKE 'ADELINA%' ORDER BY passenger_name ASC LIMIT 5;
+-- -SELECT * FROM tickets WHERE ticket_no BETWEEN '0005432001000' AND '0005432001010' ;
+-- -SELECT * FROM tickets WHERE ticket_no >= '0005432001000' AND ticket_no <='0005432001010';
+-- -SELECT * FROM aircrafts WHERE range IN (5600,5700,6700);
+-- -SELECT * FROM bookings WHERE book_date IN ('2017-07-10%','2017-07-15%','2017-07-20%','2017-07-25%');
+-- -SELECT b.book_date as DATE_OF_BOOKING,b.total_amount as TOTAL FROM bookings as b WHERE book_date IN ('2017-07-10%','2017-07-15%','2017-07-20%','2017-07-25%');
+-- -SELECT   passenger_name FROM tickets WHERE passenger_name LIKE '___TA%';
+-- -SELECT  * FROM tickets LIMIT 5;
+-- -SELECT  * FROM tickets ORDER BY passenger_name ASC LIMIT 10;
+-- -SELECT * FROM boarding_passes FETCH FIRST 10 ROWS ONLY;
+-- -SELECT * FROM boarding_passes OFFSET 10 ROWS FETCH FIRST 10 ROWS ONLY;
+-- -SELECT * FROM boarding_passes WHERE boarding_no NOT IN ('11','16','22');
+-- -SELECT * FROM boarding_passes WHERE boarding_no NOT IN ('11','16','22') LIMIT 25;
+-- -SELECT * FROM flights WHERE actual_departure ISNULL;
+-- -SELECT * FROM flights WHERE actual_departure ISNULL AND actual_arrival ISNULL;
+-- -SELECT * FROM flights WHERE actual_departure IS NOT NULL AND actual_arrival IS NOT NULL;
+-- -SELECT '50' :: INTEGER;
+-- SELECT '10-08-1988' :: DATE;
+-- SELECT CAST ('50' AS INTEGER);
+-- SELECT CAST ('10-08-1988' AS DATE);
+-- SELECT CAST ( 'true' AS BOOLEAN);
+-- SELECT CAST ( 'false' AS BOOLEAN);
+-- SELECT CAST ( 'T' AS BOOLEAN);
+-- SELECT CAST ( 'F' AS BOOLEAN);
+-- SELECT CAST ( 't' AS BOOLEAN);
+-- SELECT CAST ( 'f' AS BOOLEAN);
+-- SELECT CAST ( '30 minutes' AS INTERVAL);
+-- SELECT CAST ( '1 second' AS INTERVAL);
+-- SELECT CAST ( '23 hour' AS INTERVAL);
+-- SELECT CAST ( '1 day' AS INTERVAL);
+-- SELECT CAST ( '2 weeks' AS INTERVAL);
+-- SELECT CAST ( '3 months' AS INTERVAL);
+-- SELECT CAST ( '12 months' AS INTERVAL);
+-- SELECT CAST ( '30 years' AS INTERVAL);
+ -- 1.	List the cities in which there is no flights from Moscow ?
+-- SELECT departure_airport FROM flights WHERE departure_airport NOT IN (SELECT airport_code FROM airports WHERE city->>'en'='Moscow') ;
+-- SELECT  COUNT(city) FROM airports WHERE airport_code IN (SELECT departure_airport FROM flights WHERE departure_airport NOT IN (SELECT airport_code FROM airports WHERE city->>'en'='Moscow') );
+--SELECT DISTINCT city ->> 'en' AS CITY FROM airports WHERE airport_code IN (SELECT departure_airport FROM flights WHERE departure_airport NOT IN (SELECT airport_code FROM airports WHERE city->>'en'='Moscow') );
+-- Above Mine
+-- SELECT DISTINCT a.city ->> 'en' as city
+-- FROM airports a
+-- WHERE a.city ->> 'en' <> 'Moscow'
+-- ORDER BY city;
+ -- 2.	Select airports in a time zone is in Asia / Novokuznetsk and Asia / Krasnoyarsk ?
+-- SELECT * FROM airports WHERE timezone = 'Asia/Novokuznetsk' AND timezone = 'Asia/Krasnoyarsk' ;
+-- Above Mine
+-- SELECT *FROM airports WHERE timezone IN ('Asia / Novokuznetsk', 'Asia / Krasnoyarsk');
+ -- 3.	Which planes have a flight range in the range from 3,000 km to 6,000 km ?
+-- SELECT * FROM aircrafts WHERE range BETWEEN 3000 AND 6000;
+ -- 4.	Get the model , range,  and miles of every air craft exist in the Airlines database, notice that miles = range / 1.609  and round the result to 2 numbers after the float point?
+-- SELECT model, range, round (range / 1.609, 2) AS miles FROM aircrafts;
+ -- Return all information about air craft that has aircraft_code = 'SU9' and its range in miles ?
+-- SELECT aircraft_code,model,round(range/1.69, 2) AS miles FROM aircrafts WHERE aircraft_code = 'SU9';
+-- CREATE TABLE pilots(id SERIAL PRIMARY KEY,
+-- 				   name TEXT NOT NULL,
+-- 				   speciality TEXT NOT NULL,
+-- 				   age TEXT);
+-- INSERT INTO pilots(name ,speciality,age) VALUES ('CHANDAN','NAVIGATION','33');
+-- INSERT INTO pilots(name ,speciality,age) VALUES ('PRASAD','PILOT','31'),('SWATI','CO-PILOT','27');
+-- SELECT * FROM pilots ;
+-- SELECT name FROM pilots GROUP BY name
+-- SELECT city,COUNT(*) FROM airports GROUP BY city HAVING COUNT(*) >1
+ -- 1. Calculate the Average tickets Sales?
+-- SELECT AVG(AMOUNT) AS AVERAGE_SALES
+-- FROM TICKET_FLIGHTS;
+ -- 2. Return the number of seats in the air craft that has aircraft code = 'CN1' ?
+-- SELECT COUNT(*) FROM seats WHERE aircraft_code LIKE 'CN1%';
+-- SELECT COUNT(*) FROM seats WHERE aircraft_code = 'CN1';
+ -- 3. Return the number of seats in the air craft that has aircraft code = 'SU9'  ?
+-- SELECT COUNT(*) FROM seats WHERE aircraft_code LIKE 'SU9%';
+-- SELECT COUNT(*) FROM seats WHERE aircraft_code = 'SU9'
+ -- 4. Write a query to return the aircraft_code and the number of seats of each air craft ordered ascending?
+-- SELECT AIRCRAFT_CODE,
+-- 	COUNT(*)
+-- FROM SEATS
+-- GROUP BY AIRCRAFT_CODE
+-- ORDER BY COUNT;
+ -- 5. calculate the number of seats in the salons for all aircraft models, but now taking into account the class of service Business class and Economic class.
+-- SELECT AIRCRAFT_CODE,
+-- 	FARE_CONDITIONS,
+-- 	COUNT (*)
+-- FROM SEATS
+-- GROUP BY AIRCRAFT_CODE,
+-- 	FARE_CONDITIONS
+-- ORDER BY AIRCRAFT_CODE,
+-- 	FARE_CONDITIONS;
+ -- 6. What was the least day in tickets sales?
+-- SELECT BOOK_DATE,
+-- 	SUM(TOTAL_AMOUNT)
+-- FROM BOOKINGS
+-- GROUP BY 1
+-- ORDER BY 2
+-- LIMIT 1;
+ -- 1. Determine how many flights from each city to other cities, return the the name of city and count of flights more than 50 order the data from the largest no of flights to the least?
+-- SELECT city->>'en' FROM airports
+-- SELECT city->>'en' FROM airports WHERE airport_code IN (SELECT departure_airport FROM flights);
+-- SELECT
+-- 	(SELECT CITY - >> 'en'
+-- 		FROM AIRPORTS
+-- 		WHERE AIRPORT_CODE = DEPARTURE_AIRPORT) AS DEPARTURE_CITY,
+-- 	COUNT(*)
+-- FROM FLIGHTS
+-- GROUP BY
+-- 	(SELECT CITY - >> 'en'
+-- 		FROM AIRPORTS
+-- 		WHERE AIRPORT_CODE = DEPARTURE_AIRPORT)
+-- HAVING COUNT (*) >= 50
+-- ORDER BY COUNT DESC;
+ -- 2. Return all flight details in the indicated day 2017-08-28
+-- include flight count ascending order and departures count and when departures happen in arrivals count and when arrivals happen?
+-- SELECT F.FLIGHT_NO,
+-- 	F.SCHEDULED_DEPARTURE :: TIME AS DEP_TIME,
+-- 	F.DEPARTURE_AIRPORT AS DEPARTURES,
+-- 	F.ARRIVAL_AIRPORT AS ARRIVALS,
+-- 	COUNT (FLIGHT_ID)AS FLIGHT_COUNT
+-- FROM FLIGHTS F
+-- WHERE F.DEPARTURE_AIRPORT = 'KZN'
+-- 	AND F.SCHEDULED_DEPARTURE >= '2017-08-28' :: date
+-- 	AND F.SCHEDULED_DEPARTURE < '2017-08-29' :: date
+-- GROUP BY 1,2,
+-- 	3,4,
+-- 	F.SCHEDULED_DEPARTURE
+-- ORDER BY FLIGHT_COUNT DESC,
+-- 	F.ARRIVAL_AIRPORT,
+-- 	F.SCHEDULED_DEPARTURE;
+-- CASE STATEMENT
+ -- SELECT DATE_PART('month',BOOK_DATE) AS MONTH,
+-- 	SUM (TOTAL_AMOUNT) AS BOOKINGS,
+-- 	CASE
+-- 					WHEN SUM(TOTAL_AMOUNT) > 6958118400.00 THEN 'the most'
+-- 					WHEN SUM(TOTAL_AMOUNT) < 6958118400.00 THEN 'the least'
+-- 					ELSE 'the medium'
+-- 	END BOOKING_QT
+-- FROM BOOKINGS
+-- GROUP BY MONTH
+ --  WRITE A QUERY TO ARRANGE THE RANGE OF MODEL OF AIR CRAFTS SO SHORT RANGE IS LESS THAN 2000,
+-- 	MIDDLE RANGE IS MORE THAN 2000 AND LESS THAN 5000 & ANY RANGE ABOVE 5000 IS long RANGE?
+ -- SELECT MODEL,
+-- 	RANGE AS RANGE_STATUS,
+-- 	CASE
+-- 					WHEN RANGE < 2000 THEN 'SHORT RANGE'
+-- 					WHEN RANGE > 2000
+-- 										AND RANGE < 5000 THEN 'SHORT RANGE'
+-- 					ELSE 'LONG RANGE'
+-- 	END RANGE_QT
+-- FROM AIRCRAFTS
+-- ORDER BY RANGE ;
+ -- ABOVE IS MINE
+ -- SELECT MODEL,
+-- 	RANGE,
+-- 	CASE
+-- 					WHEN RANGE < 2000 THEN 'Short'
+-- 					WHEN RANGE < 5000 THEN 'Middle'
+-- 					ELSE 'Long '
+-- 	END AS RANGE
+-- FROM AIRCRAFTS
+-- ORDER BY MODEL;
+ -- NULLIF()
+ -- SELECT COUNT(*)
+-- FROM FLIGHTS
+ -- SELECT COUNT(NULLIF(ACTUAL_DEPARTURE,NULL)) AS ACTUAL_DEPARTURE_COUNT,
+-- 	COUNT(NULLIF(ACTUAL_ARRIVAL,NULL))AS ACTUAL_ARRIVAL_COUNT
+-- FROM FLIGHTS
+ -- SELECT COUNT(*)- COUNT(NULLIF(ACTUAL_DEPARTURE,NULL)) AS ACTUAL_DEPARTURE_COUNT,
+-- 	COUNT(*) - COUNT(NULLIF(ACTUAL_ARRIVAL,NULL))AS ACTUAL_ARRIVAL_COUNT
+-- FROM FLIGHTS
+ -- COALESCE() Function in SQL
+ -- SELECT STATUS,
+-- 	ACTUAL_DEPARTUREACTUAL_ARRIVAL
+-- FROM FLIGHTS;
+ -- SELECT STATUS,
+-- 	COALESCE(ACTUAL_DEPARTURE),
+-- 	COALESCE(ACTUAL_ARRIVAL)
+-- FROM FLIGHTS;
+ -- SELECT STATUS,
+-- 	COALESCE(ACTUAL_DEPARTURE,
+ -- 		CURRENT_TIMESTAMP) AS ACTUAL_DEPARTURE,
+-- 	COALESCE(ACTUAL_ARRIVAL,
+ -- 		CURRENT_TIMESTAMP) AS ACTUAL_ARRIVAL
+-- FROM FLIGHTS
+-- WHERE ACTUAL_DEPARTURE = NULL
+-- 	OR ACTUAL_ARRIVAL = NULL;
+ -- SQL Conditional Challenge
+-- WHAT IS THE SHORTEST FLIGHT DURATION FOR EACH POSSIBLE FLIGHT FROM MOSCOW TO ST. PETERSBURG,
+-- AND HOW MANY TIMES WAS THE FLIGHT DELAYED FOR MORE THAN AN HOUR?
+ -- SELECT F.FLIGHT_NO,
+-- 	(F.SCHEDULED_ARRIVAL - F.SCHEDULED_DEPARTURE) AS SCHEDULED_DURATION,
+-- 	MIN(F.SCHEDULED_ARRIVAL - F.SCHEDULED_DEPARTURE),
+-- 	MAX(F.SCHEDULED_ARRIVAL - F.SCHEDULED_DEPARTURE),
+-- 	SUM(CASE
+-- 			WHEN F.ACTUAL_DEPARTURE > F.SCHEDULED_DEPARTURE + INTERVAL '1 hour'THEN 1
+-- 			ELSE 0 END) DELAYS FROM FLIGHTS F
+-- WHERE
+-- 		(SELECT CITY ->> 'en'
+-- 			FROM AIRPORTS
+-- 			WHERE AIRPORT_CODE = DEPARTURE_AIRPORT) = 'Moscow'
+-- 	AND
+-- 		(SELECT CITY ->> 'en'
+-- 			FROM AIRPORTS
+-- 			WHERE AIRPORT_CODE = ARRIVAL_AIRPORT) = 'St. Petersburg'
+-- 	AND F.STATUS = 'Arrived'
+-- GROUP BY F.FLIGHT_NO, (F.SCHEDULED_ARRIVAL - F.SCHEDULED_DEPARTURE);
+ --  SELECT * FROM BOOKINGS
+-- SELECT BOOK_DATE,
+-- 	SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOK_DATE
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(DAY FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(DOY FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(ISOYEAR FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(MONTH FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(DOW  FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT(HOUR FROM BOOK_DATE) AS BOOKING,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING
+-- ORDER BY SALES;
+ -- SELECT EXTRACT('MONTH' FROM BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_MONTH
+-- ORDER BY BOOKING_MONTH,SALES;
+ -- SELECT EXTRACT('DAY' FROM BOOK_DATE) AS BOOKING_DAY,EXTRACT('MONTH' FROM BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY, BOOKING_MONTH
+-- ORDER BY BOOKING_MONTH,SALES;
+ -- SELECT EXTRACT('DAY' FROM BOOK_DATE) AS BOOKING_DAY,EXTRACT('MONTH' FROM BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY, BOOKING_MONTH
+-- ORDER BY BOOKING_MONTH,BOOKING_DAY,SALES;
+ -- SAME OUTPUT BY MY QUERY
+ -- SELECT EXTRACT('DAY' FROM BOOK_DATE) AS BOOKING_DAY,EXTRACT('MONTH' FROM BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS SALES
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY, BOOKING_MONTH
+-- ORDER BY BOOKING_MONTH;
+ -- SELECT BOOK_DATE,COUNT(*)
+-- FROM BOOKINGS
+-- GROUP BY BOOK_DATE;
+ -- SELECT BOOK_DATE,SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOK_DATE
+-- ORDER BY BOOK_DATE ASC;
+ -- SELECT DATE_TRUNC('DAY',BOOK_DATE) AS BOOKING_DAY,COUNT(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY;
+ -- SELECT DATE_TRUNC('DAY',BOOK_DATE) AS BOOKING_DAY,DATE_TRUNC('MONTH',BOOK_DATE) AS BOOKING_MONTH,COUNT(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY,BOOKING_MONTH
+-- ORDER BY BOOKING_DAY;
+ -- SELECT DATE_PART('DAY',BOOK_DATE) AS BOOKING_DAY,DATE_PART('MONTH',BOOK_DATE) AS BOOKING_MONTH,COUNT(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY,BOOKING_MONTH
+-- ORDER BY BOOKING_MONTH;
+ -- SELECT DATE_PART('DAY',BOOK_DATE) AS BOOKING_DAY,DATE_PART('MONTH',BOOK_DATE) AS BOOKING_MONTH,COUNT(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY,BOOKING_MONTH
+-- HAVING DATE_PART('MONTH',BOOK_DATE)=6;
+ -- SELECT DATE_PART('DAY',BOOK_DATE) AS BOOKING_DAY,DATE_PART('MONTH',BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY,BOOKING_MONTH
+-- HAVING DATE_PART('MONTH',BOOK_DATE)=6 AND DATE_PART('DAY',BOOK_DATE)=25;
+ -- SELECT DATE_PART('DOW',BOOK_DATE) AS BOOKING_DAY,DATE_PART('MONTH',BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_DAY,BOOKING_MONTH
+-- HAVING DATE_PART('MONTH',BOOK_DATE)=6;
+ -- SELECT DATE_PART('MONTH',BOOK_DATE) AS BOOKING_MONTH,SUM(TOTAL_AMOUNT) AS TOTAL_AMOUNT_DAY
+-- FROM BOOKINGS
+-- GROUP BY BOOKING_MONTH;
+ -- SELECT BOOK_DATE,BOOK_REF
+-- FROM BOOKINGS
+-- WHERE BOOK_DATE='13=08-2017'::DATE;
+ -- LAST DATE DATA INSERTED
+-- SELECT PUBLIC.NOW()
+ -- SELECT DATE_TRUNC('DAY',BOOK_DATE) ,DATE_PART('DAY',BOOK_DATE),
+-- EXTRACT('DAY' FROM BOOK_DATE) BOOKING_BOOK_DATE,CURRENT_DATE
+-- FROM BOOKINGS
+ -- INNER JOIN
+ -- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	MODEL ->> 'en' AS MODEL_AIRCRAFTS
+-- FROM SEATS S JOIN AIRCRAFTS A ON S.AIRCRAFT_CODE=A.AIRCRAFT_CODE;
+ -- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	MODEL ->> 'en' AS MODEL_AIRCRAFTS
+-- FROM SEATS S
+-- JOIN AIRCRAFTS A ON S.AIRCRAFT_CODE = A.AIRCRAFT_CODE
+-- WHERE A.MODEL ->> 'en' = 'Airbus A320-200';
+ -- SELECT T.PASSENGER_NAME,
+-- 	T.TICKET_NO, DATE_PART('DAY',BOOK_DATE) AS DAY,DATE_PART('MONTH',BOOK_DATE) AS MONTH,TF.FARE_CONDITIONS
+-- FROM TICKETS T
+-- LEFT JOIN BOOKINGS B
+-- ON T.BOOK_REF=B.BOOK_REF
+-- LEFT JOIN TICKET_FLIGHTS TF
+-- ON T.TICKET_NO=TF.TICKET_NO
+-- WHERE FARE_CONDITIONS='Business' ORDER BY MONTH,DAY;
+ -- SELECT DISTINCT T.PASSENGER_NAME,
+-- 	T.TICKET_NO, DATE_PART('DAY',BOOK_DATE) AS DAY,DATE_PART('MONTH',BOOK_DATE) AS MONTH,TF.FARE_CONDITIONS
+-- FROM TICKETS T
+-- LEFT OUTER JOIN BOOKINGS B
+-- ON T.BOOK_REF=B.BOOK_REF
+-- LEFT OUTER JOIN TICKET_FLIGHTS TF
+-- ON T.TICKET_NO=TF.TICKET_NO
+-- WHERE FARE_CONDITIONS='Business' ORDER BY MONTH,DAY;
+-- SELECT  T.PASSENGER_NAME,
+-- 	T.TICKET_NO, DATE_PART('DAY',BOOK_DATE) AS DAY,DATE_PART('MONTH',BOOK_DATE) AS MONTH,TF.FARE_CONDITIONS
+-- FROM TICKETS T
+-- RIGHT JOIN BOOKINGS B
+-- ON B.BOOK_REF=T.BOOK_REF
+-- RIGHT JOIN TICKET_FLIGHTS TF
+-- ON TF.TICKET_NO=T.TICKET_NO
+-- WHERE FARE_CONDITIONS='Business' ORDER BY MONTH,DAY;
+ -- SELECT  *
+-- FROM TICKETS T
+-- LEFT JOIN BOARDING_PASSES B
+-- ON T.TICKET_NO=B.TICKET_NO;
+ -- SELECT  *
+-- FROM TICKETS T
+-- RIGHT JOIN BOARDING_PASSES B
+-- ON T.TICKET_NO=B.TICKET_NO;
+ -- SELECT  *
+-- FROM TICKETS T
+-- FULL JOIN BOARDING_PASSES B
+-- ON T.TICKET_NO=B.TICKET_NO;
+ -- SELECT  *
+-- FROM AIRCRAFTS
+-- CROSS JOIN AIRPORTS;
+ -- SELECT  *
+-- FROM AIRCRAFTS
+-- CROSS JOIN SEATS;
+ --   UNION, UNION ALL, INTERSECT & EXCEPT
+-- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE > 4500
+-- UNION
+-- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE < 7500 ORDER BY RANGE;
+ -- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE > 4500
+-- UNION ALL
+-- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE < 7500 ORDER BY RANGE;
+ -- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE > 4500
+-- INTERSECT
+-- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE < 7500 ORDER BY RANGE;
+ -- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE > 4500
+-- EXCEPT
+-- SELECT  *
+-- FROM AIRCRAFTS
+-- WHERE RANGE < 7500 ORDER BY RANGE;
+ -- SELF JOIN
+-- SELECT  F1.FLIGHT_NO,F1.ARRIVAL_AIRPORT,F1.STATUS,F2.FLIGHT_NO,F2.ARRIVAL_AIRPORT,F2.STATUS
+-- FROM FLIGHTS F1,FLIGHTS F2
+-- WHERE F1.FLIGHT_NO <> F2.FLIGHT_NO
+-- LIMIT 5;
+ -- USING
+-- SELECT * FROM TICKETS;
+ -- SELECT T.TICKET_NO,
+-- 	T.PASSENGER_NAME,
+-- 	T.CONTACT_DATA
+-- FROM TICKETS T;
+ -- SELECT T.TICKET_NO,
+-- 	T.PASSENGER_NAME,
+-- 	T.CONTACT_DATA,
+-- 	B.TOTAL_AMOUNT,
+-- 	B.BOOK_DATE
+-- FROM TICKETS T
+-- JOIN BOOKINGS B USING (BOOK_REF);
+ -- NATURAL JOIN
+-- SELECT * FROM AIRCRAFTS A NATURAL JOIN SEATS S;
+ -- 1. WHO TRAVELED FROM MOSCOW (SVO) TO NOVOSIBIRSK (OVB) ON SEAT 1A YESTERDAY, AND WHEN WAS THE TICKET BOOKED?
+ -- SELECT T.PASSENGER_NAME,
+-- 	B.BOOK_DATE
+-- FROM BOOKINGS B
+-- JOIN TICKETS T ON T.BOOK_REF = B.BOOK_REF
+-- JOIN BOARDING_PASSES BP ON BP.TICKET_NO = T.TICKET_NO
+-- JOIN FLIGHTS F ON F.FLIGHT_ID = BP.FLIGHT_ID
+-- WHERE F.DEPARTURE_AIRPORT = 'SVO'
+-- 	AND F.ARRIVAL_AIRPORT = 'OVB'
+-- 	AND F.SCHEDULED_DEPARTURE::date = PUBLIC.NOW()::date - INTERVAL '2 day'
+-- 	AND BP.SEAT_NO = '1A';
+ -- 2. FIND THE MOST DISCIPLINED PASSENGERS WHO CHECKED in FIRST
+-- FOR ALL THEIR FLIGHTS. TAKE INTO ACCOUNT ONLY THOSE PASSENGERS WHO TOOK AT LEAST TWO FLIGHTS ?
+-- SELECT T.PASSENGER_NAME,
+-- 	T.TICKET_NO
+-- FROM TICKETS T
+-- JOIN BOARDING_PASSES BP ON BP.TICKET_NO = T.TICKET_NO
+-- GROUP BY T.PASSENGER_NAME,T.TICKET_NO
+-- HAVING MAX(BP.BOARDING_NO) = 1
+-- AND COUNT(*) > 1;
+ -- 3. CALCULATE THE number OF PASSENGERS AND number OF FLIGHTS DEPARTING
+-- FROM ONE AIRPORT (SVO) DURING EACH HOUR ON THE INDICATED DAY 2017-08-02 ?
+ -- SELECT DATE_PART ('hour',F.SCHEDULED_DEPARTURE) "hour",
+-- 	COUNT (TICKET_NO) PASSENGERS_CNT,
+-- 	COUNT (DISTINCT F.FLIGHT_ID) FLIGHTS_CNT
+-- FROM FLIGHTS F
+-- JOIN TICKET_FLIGHTS T ON F.FLIGHT_ID = T.FLIGHT_ID
+-- WHERE F.DEPARTURE_AIRPORT = 'SVO'
+-- 	AND F.SCHEDULED_DEPARTURE >= '2017-08-02' :: date
+-- 	AND F.SCHEDULED_DEPARTURE < '2017-08-03' :: date
+-- GROUP BY DATE_PART ('hour',F.SCHEDULED_DEPARTURE);
+ -- Use SQL  joins to  return unique city name, flight_no, airport and timezone?
+ -- SELECT A.CITY,
+-- 	F.FLIGHT_NO,
+-- 	A.AIRPORT_NAME,A.TIMEZONE
+-- FROM FLIGHTS F
+-- JOIN AIRPORTS A ON A.AIRPORT_CODE = F.DEPARTURE_AIRPORT;
+ -- 1. How many people can be included into a single booking according to the available data?
+ -- SELECT TT.BOOKINGS_NO,
+-- 	COUNT(*)PASSENGERS_NO
+-- FROM
+-- 	(SELECT T.BOOK_REF,
+-- 			COUNT(*) BOOKINGS_NO
+-- 		FROM TICKETS T
+-- 		GROUP BY T.BOOK_REF) TT
+-- GROUP BY TT.BOOKINGS_NO
+-- ORDER BY TT.BOOKINGS_NO;
+ -- 2. Which combinations of first and last names occur most often?
+-- What is the ratio of the passengers with such names to the total number of passengers?
+ -- SELECT PASSENGER_NAME,
+-- 	ROUND(100.0 * CNT / SUM(CNT) OVER (), 2) AS PERCENT
+-- FROM
+-- 	(SELECT PASSENGER_NAME,
+-- 			COUNT(*) CNT
+-- 		FROM TICKETS
+-- 		GROUP BY PASSENGER_NAME)SUB
+-- ORDER BY PERCENT DESC;
+ -- 1. What are the maximum and minimum ticket prices in all directions?
+ -- SELECT
+-- 	(SELECT CITY ->> 'en'
+-- 		FROM AIRPORTS
+-- 		WHERE AIRPORT_CODE = F.DEPARTURE_AIRPORT) AS DEPARTURE_CITY,
+ -- 	(SELECT CITY ->> 'en'
+-- 		FROM AIRPORTS
+-- 		WHERE AIRPORT_CODE = F.ARRIVAL_AIRPORT) AS ARRIVAL_CITY,
+-- 	MAX (TF.AMOUNT), MIN (TF.AMOUNT)
+-- FROM FLIGHTS F
+-- JOIN TICKET_FLIGHTS TF ON F.FLIGHT_ID = TF.FLIGHT_ID
+-- GROUP BY 1, 2
+-- ORDER BY 1, 2;
+-- 2. Get a list of airports in cities with more than one airport ?
+-- SELECT AA.CITY ->> 'en'AS CITY,
+-- 	AA.AIRPORT_CODE,
+-- 	AA.AIRPORT_NAME ->> 'en' AS AIRPORT
+-- FROM
+-- 	(SELECT CITY,
+-- 			COUNT (*)
+-- 		FROM AIRPORTS
+-- 		GROUP BY CITY
+-- 		HAVING COUNT (*) > 1) AS A
+-- JOIN AIRPORTS AS AA ON A.CITY = AA.CITY
+-- ORDER BY AA.CITY,
+-- 	AA.AIRPORT_NAME;
+ -- 3. What will be the total number of different routes that are theoretically can be laid between all cities?
+ -- SELECT COUNT (*)
+-- FROM
+-- 	(SELECT DISTINCT CITY
+-- 		FROM AIRPORTS) AS A1
+-- JOIN
+-- 	(SELECT DISTINCT CITY
+-- 		FROM AIRPORTS) AS A2 ON A1.CITY <> A2.CITY;
+ -- math function
+-- SELECT DATE_TRUNC('DAY',BOOK_DATE),COUNT(T.TICKET_NO)/ SUM(TOTAL_AMOUNT) AS SALES_RATIO
+-- FROM BOOKINGS B
+-- JOIN TICKETS T
+-- ON B.BOOK_REF = T.BOOK_REF
+-- GROUP BY 1
+-- LIMIT 5;
+ -- Window Functions OVER()
+-- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	A.MODEL ->> 'en' AS MODEL,AVG(A.RANGE) AVERAGE_RANGE
+-- FROM SEATS S
+-- JOIN AIRCRAFTS A USING(AIRCRAFT_CODE)
+-- GROUP BY 1,2,3
+ -- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	A.MODEL ->> 'en' AS MODEL,
+-- 	AVG(A.RANGE) OVER (PARTITION BY MODEL) AVERAGE_RANGE
+-- FROM SEATS S
+-- JOIN AIRCRAFTS A USING(AIRCRAFT_CODE)
+-- GROUP BY 1,2,MODEL,RANGE
+ -- Window Functions RANK() + OVER() & NTILE() + OVER()
+ -- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	A.MODEL ->> 'en' AS MODEL,RANGE,
+-- 	RANK() OVER (PARTITION BY S.SEAT_NO ORDER BY A.RANGE DESC) RANGE_RANK
+-- FROM SEATS S
+-- JOIN AIRCRAFTS A USING(AIRCRAFT_CODE)
+-- ORDER BY RANGE_RANK
+ -- SELECT S.SEAT_NO,
+-- 	S.FARE_CONDITIONS,
+-- 	A.MODEL ->> 'en' AS MODEL,RANGE,
+-- 	NTILE(5) OVER (PARTITION BY MODEL ORDER BY A.RANGE) RANGE_RANK
+-- FROM SEATS S
+-- JOIN AIRCRAFTS A USING(AIRCRAFT_CODE)
+-- ORDER BY RANGE_RANK
+ -- Window Functions OVER() + LEAD()
+ -- WITH CTE AS
+-- 	(SELECT DATE_PART('MONTH',BOOK_DATE) AS MONTH,
+-- 			SUM(TOTAL_AMOUNT) AS TOTAL_SALES
+-- 		FROM BOOKINGS
+-- 		GROUP BY MONTH
+-- 		ORDER BY MONTH)
+-- SELECT MONTH,
+-- 	TOTAL_SALES,
+-- 	LEAD(TOTAL_SALES,1) OVER (ORDER BY MONTH) NEXT_MONTH_TOTAL_SALES
+-- FROM CTE;
+ -- WITH CTE AS
+-- 	(SELECT DATE_PART('MONTH',BOOK_DATE) AS MONTH,
+-- 			SUM(TOTAL_AMOUNT) AS TOTAL_SALES
+-- 		FROM BOOKINGS
+-- 		GROUP BY MONTH
+-- 		ORDER BY MONTH),CTE2 AS (SELECT MONTH,
+-- 	TOTAL_SALES,
+-- 	LEAD(TOTAL_SALES,1) OVER (ORDER BY MONTH) NEXT_MONTH_TOTAL_SALES
+-- FROM CTE)
+ -- SELECT MONTH,TOTAL_SALES,NEXT_MONTH_TOTAL_SALES,
+-- (NEXT_MONTH_TOTAL_SALES-TOTAL_SALES) AS SALES_VARIANCE
+-- FROM CTE2;
+ -- Window Functions OVER() + LAG()
+ -- WITH CTE AS
+-- 	(SELECT DATE_PART('MONTH',BOOK_DATE) AS MONTH,
+-- 			SUM(TOTAL_AMOUNT) AS TOTAL_SALES
+-- 		FROM BOOKINGS
+-- 		GROUP BY MONTH
+-- 		ORDER BY MONTH)
+-- SELECT MONTH,
+-- 	TOTAL_SALES,
+-- 	LAG(TOTAL_SALES,1) OVER (ORDER BY MONTH) PREVIOUS_MONTH_TOTAL_SALES
+-- FROM CTE;
+ -- GROUPING SETS(), ROLLUP(), CUBE()
+ -- THIS QUERY RESULTS INTO CREATION OF TABLE
+-- SELECT S.SEAT_NO,S.FARE_CONDITIONS,A.MODEL->>'en' AS MODEL,RANGE INTO AIRCRAFTS_DETAILS FROM SEATS S
+-- JOIN AIRCRAFTS A
+-- USING(AIRCRAFT_CODE)
+-- LIMIT 5;
+ -- SELECT * FROM AIRCRAFTS_DETAILS;
+ -- SELECT SEAT_NO,FARE_CONDITIONS,MODEL,AVG(RANGE)
+-- FROM AIRCRAFTS_DETAILS
+-- GROUP BY GROUPING SETS(1,2,3);
+ -- SELECT SEAT_NO,FARE_CONDITIONS,MODEL,AVG(RANGE)
+-- FROM AIRCRAFTS_DETAILS
+-- GROUP BY  ROLLUP(1,2,3);
+ -- SELECT SEAT_NO,FARE_CONDITIONS,MODEL,AVG(RANGE)
+-- FROM AIRCRAFTS_DETAILS
+-- GROUP BY  CUBE(1,2,3);
+ -- VIEW()
+-- CREATE VIEW CHANDAN AS
+-- SELECT AIRCRAFT_CODE,
+-- 	MODEL ->> 'en' AS MODEL,
+-- 	RANGE
+-- FROM AIRCRAFTS;
+ -- SELECT * FROM CHANDAN;
+-- Count the number of routes laid from the airports?
+-- -- CREATE VIEW cities AS SELECT (SELECT city ->> 'en' FROM airports WHERE airport_code =departure_airport) AS departure_city, (SELECT city ->> 'en' FROM airports WHERE airport_code =arrival_airport) AS arrival_city
+-- -- FROM flights;
+--  -- SELECT departure_city, count (*)
+-- -- FROM cities
+-- -- GROUP BY departure_city
+-- -- HAVING departure_city IN (SELECT city->> 'en' FROM airports )
+-- -- ORDER BY count DESC;
+ -- 1. SUPPOSE OUR AIRLINE MARKETERS WANT TO KNOW HOW OFTEN THERE ARE DIFFERENT NAMES AMONG THE PASSENGERS?
+--  -- SELECT LEFT(passenger_name, STRPOS(passenger_name, ' ') - 1) AS firstname, COUNT (*)
+-- -- FROM tickets
+-- -- GROUP BY 1
+-- -- ORDER BY 2 DESC;
+ -- 2. WHICH COMBINATIONS OF FIRST NAMESAND LAST NAMES SEPARATELY OCCUR MOST OFTEN?
+-- WHAT IS THE RATIO OF THE PASSENGERS WITH SUCH NAMES TO THE TOTAL number OF PASSENGERS?
+--  -- WITH P AS
+-- -- (SELECT LEFT(PASSENGER_NAME,POSITION(' ' IN PASSENGER_NAME)) AS PASSENGER_NAME FROM TICKETS)
+-- -- SELECT PASSENGER_NAME,ROUND(100.0 * CNT / SUM(CNT) OVER (), 2) AS PERCENT FROM
+-- -- (SELECT PASSENGER_NAME,COUNT(*) CNT FROM P GROUP BY PASSENGER_NAME) T
+-- -- ORDER BY PERCENT DESC;
+
+-- FOR EACH TICKET,DISPLAY ALL THE INCLUDED FLIGHT SEGMENTS, TOGETHER WITH CONNECTION TIME.LIMIT THE RESULT TO THE TICKETS BOOKED A WEEK AGO? 
+-- -- SELECT tf.ticket_no, f.departure_airport, f.arrival_airport, f.scheduled_arrival,
+-- -- lead(f.scheduled_departure) OVER w AS next_departure,
+-- -- lead(f.scheduled_departure) OVER w - f.scheduled_arrival AS gap
+-- -- FROM bookings b
+-- -- JOIN tickets t
+-- -- ON t.book_ref = b.book_ref
+-- -- JOIN ticket_flights tf
+-- -- ON tf.ticket_no = t.ticket_no
+-- -- JOIN flights f
+-- -- ON tf.flight_id = f.flight_id
+-- -- WHERE b.book_date = public.now()::date - INTERVAL '7 day'
+-- -- WINDOW w AS (PARTITION BY tf.ticket_no  ORDER BY f.scheduled_departure);
+-- Find the most disciplined passengers who checked in first for all their flights. 
+-- Take into account only those passengers who took at least two flights?
+-- -- SELECT t.passenger_name, t.ticket_no
+-- -- FROM tickets t
+-- -- JOIN boarding_passes bp
+-- -- ON bp.ticket_no = t.ticket_no
+-- -- GROUP BY t.passenger_name,t.ticket_no
+-- -- HAVING max(bp.boarding_no) = 1 AND count(*) > 1;
+
+-- Which flights had the longest delays?
+-- -- SELECT f.flight_no,f.scheduled_departure,f.actual_departure,
+-- -- (f.actual_departure - f.scheduled_departure) AS delay
+-- -- FROM  flights f
+-- -- WHERE f.actual_departure IS NOT NULL
+-- -- ORDER BY f.actual_departure - f.scheduled_departure ;
+
+-- How many seats remained free on flight PG0404 in the day before the last in the airlines database?
+-- -- SELECT count(*)
+-- -- FROM (SELECT s.seat_no FROM  seats s
+-- -- WHERE s.aircraft_code = (SELECT aircraft_code
+-- -- FROM  flights
+-- -- WHERE flight_no = 'PG0404'
+-- -- AND scheduled_departure::date = public.now()::date - INTERVAL '1 day')
+-- -- EXCEPT
+-- -- SELECT bp.seat_no
+-- -- FROM boarding_passes bp
+-- -- WHERE bp.flight_id = (SELECT flight_id FROM  flights
+-- -- WHERE flight_no = 'PG0404'                                     
+-- -- AND scheduled_departure::date = public.now()::date - INTERVAL '1 day')) t; 
+
+-- what is the different between the tables created using VIEWS and the tables created using SELECT INTO ?
+-- -- * SELECT INTO created a table that is structured with a set number of columns and a boundless number of columns so you can apply all the SQL querying commands on the the resulted table.
+-- -- * But VIEWS is treated as  virtual tables that is extracted from a database So you cannot apply all the SQL querying commands on the the resulted table as joins.
+
+-- -- -- -- -- -- -- -- -- -- 
+-- Using Python Pandas Package to load PostgreSQL the Data Output file
+-- -- COPY (SELECT PASSENGER_NAME,
+-- -- 	DATE_PART('DAY',BOOK_DATE) AS DAY,
+-- -- 	DATE_PART('MONTH',BOOK_DATE) AS MONTH,
+-- -- 	(SELECT CITY ->> 'en' FROM AIRPORTS WHERE AIRPORT_CODE = F.DEPARTURE_AIRPORT)AS DEPARTURE_CITY,
+-- -- 	(SELECT CITY  ->> 'en' FROM AIRPORTS WHERE AIRPORT_CODE=F.ARRIVAL_AIRPORT)AS ARRIVAL_CITY,
+-- -- 	SUM(TOTAL_AMOUNT) AS SALES
+-- -- FROM  BOOKINGS B
+-- -- JOIN TICKETS T ON B.BOOK_REF = T.BOOK_REF
+-- -- JOIN TICKET_FLIGHTS TF ON T.TICKET_NO = TF.TICKET_NO
+-- -- JOIN FLIGHTS F ON TF.FLIGHT_ID = F.FLIGHT_ID
+-- -- GROUP BY 1,2,3,4,5
+-- -- ORDER BY 3,6) TO 'D:\PostgreSQL\airlines_data_part.csv'DELIMITER','CSV HEADER;
